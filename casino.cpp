@@ -10,11 +10,12 @@
 using namespace std;
 
 casino::casino() {
-    gameChosen = askPlayer();
+    gameChosen = askPlayerGame();
+    money = askPlayerMoney();
 }
 
 /* asks the player if they want to play 21 or war */
-string casino::askPlayer() {
+string casino::askPlayerGame() {
     bool validInput = false;
     string gameChoice;
     cout << "Do you want to play: " << endl << "1. Black Jack (b)" << endl << "2. Slot Machine (w)" << endl << "Enter b or s:";
@@ -31,6 +32,18 @@ string casino::askPlayer() {
     return gameChoice;
 }
 
+/* asks the player how much money they want in the range of 100 - 1000 */
+int casino::askPlayerMoney() {
+    double guap = 0;
+    cout << "How much money do you want to start with? ($100 - $1000): ";
+    while (!(cin >> guap) || guap < 100 || guap > 1000) {
+        cout << "Invalid answer, Try again (money has to be between 100 and 1000): " << endl;
+        cin.clear();
+        cin.ignore(123, '\n');
+    }
+    return guap;
+}
+
 /* returns the game_chosen value as a boolean */
 bool casino::getGameChosen() {
     if (gameChosen == "b") {
@@ -39,4 +52,9 @@ bool casino::getGameChosen() {
     else {
         return false;
     }
+}
+
+/* returns the players money left */
+int casino::getMoney() {
+    return money;
 }

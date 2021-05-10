@@ -13,7 +13,7 @@ int wd;
 //boolean to decide if the user wants to play black Jack or the slot machine (true is black Jack | false is slot machines)
 bool gameChosen;
 //double for the amount of money a user wants to start out with
-double money = 0;
+int money = 0;
 
 void init() {
     width = 500;
@@ -52,6 +52,11 @@ void display() {
      * Draw here
      */
 
+    //puts the users total points on the screen and updates after each correct pattern
+    glRasterPos2i(330,400);
+    for (const char &letter : to_string(money)) {
+        glutBitmapCharacter(GLUT_BITMAP_8_BY_13, letter);
+    }
 
     glFlush();  // Render now
 }
@@ -111,6 +116,7 @@ int main(int argc, char** argv) {
     //make a new casino and set gameChose to the game that was chosen by the user
     casino casinoRoyal;
     gameChosen = casinoRoyal.getGameChosen();
+    money = casinoRoyal.getMoney();
 
     init();
 

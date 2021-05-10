@@ -13,7 +13,7 @@ using namespace std;
 class casino {
 private:
     //the amount of money the player still has
-    double money;
+    int money;
     string gameChosen;
 public:
     /*
@@ -30,7 +30,15 @@ public:
      * Modifies: nothing
      * Effects: returns a boolean either b for black jack or s for slots
      */
-    string askPlayer();
+    string askPlayerGame();
+
+    /*
+     * asks the player how much money they want
+     * Requires: nothing
+     * Modifies: nothing
+     * Effects: returns a double value for the money
+     */
+    int askPlayerMoney();
 
     /*
      * returns the game chosen as a boolean
@@ -39,6 +47,14 @@ public:
      * Effects: returns a boolean either true for black jack and false for slots
      */
     bool getGameChosen();
+
+    /*
+     * returns the players money
+     * Requires: nothing
+     * Modifies: nothing
+     * Effects: returns money
+     */
+    int getMoney();
 
 };
 
