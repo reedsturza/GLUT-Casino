@@ -4,10 +4,14 @@
 
 #include "graphics.h"
 #include "shape.h"
+#include "Rect.h"
+#include "Card.h"
 #include "casino.h"
 #include <iostream>
 #include <vector>
 using namespace std;
+
+const color white(1, 1, 1);
 
 GLdouble width, height;
 int wd;
@@ -15,6 +19,18 @@ int wd;
 bool gameChosen;
 //double for the amount of money a user wants to start out with
 int money = 0;
+//vector for the user's cards
+vector<Card> playersHand;
+//vector for the dealer's hand
+vector<Card> dealersHand;
+//shape for the deck of cards in the middle
+Rect deck;
+
+void initDeck() {
+    deck.setColor(white);
+    deck.setSize(75,100);
+    deck.setCenter(250,250);
+}
 
 void init() {
     width = 500;
@@ -53,8 +69,21 @@ void display() {
      * Draw here
      */
 
+    //the user wants to play blackjack
+    if (gameChosen) {
+
+        //draw the deck in the middle for the user to click on when they want to play or draw a card
+        deck.draw();
+
+    }
+    //the user wants to play slots
+    else {
+
+    }
+
+
     //puts the users total points on the screen and updates after each correct pattern
-    glRasterPos2i(330,400);
+    glRasterPos2i(10,490);
     for (const char &letter : to_string(money)) {
         glutBitmapCharacter(GLUT_BITMAP_8_BY_13, letter);
     }
@@ -118,6 +147,8 @@ int main(int argc, char** argv) {
     casino casinoRoyal;
     gameChosen = casinoRoyal.getGameChosen();
     money = casinoRoyal.getMoney();
+
+    initDeck();
 
     init();
 

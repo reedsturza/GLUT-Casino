@@ -64,8 +64,8 @@ public:
     void changeWidth(double delta);
     void changeHeight(double delta);
 
-    /* Check if two Rect objects are overlapping */
-    bool isOverlapping(const Rect &r) const;
+    /* Check if two Rect objects are overlapping the user's mouse */
+    bool isOverlapping(int x, int y) const;
 
     /* Draw */
     void draw() const override;

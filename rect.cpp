@@ -95,19 +95,19 @@ double Rect::getHeight() const {
 }
 
 double Rect::getLeftX() const {
-    return center.x - (size.width / 2.0);
+    return center.x - (size.width);
 }
 
 double Rect::getRightX() const {
-    return center.x + (size.width / 2.0);
+    return center.x + (size.width);
 }
 
 double Rect::getTopY() const {
-    return center.y - (size.height / 2.0);
+    return center.y - (size.height);
 }
 
 double Rect::getBottomY() const {
-    return center.y + (size.height / 2.0);
+    return center.y + (size.height);
 }
 
 void Rect::setSize(dimensions size) {
@@ -140,25 +140,6 @@ void Rect::changeHeight(double delta) {
     setSize({size.width, size.height + delta});
 }
 
-bool Rect::isOverlapping(const Rect &r) const {
-    // There are only two cases when rectangles are *not* overlapping:
-    // 1. when one is to the left of the other
-    // 2. when one is above the other
-    if (r.getRightX() < this->getLeftX()) {
-        return false;
-    }
-
-    if (r.getBottomY() < this->getTopY()) {
-        return false;
-    }
-
-    //so the clouds don't automatically end the game when the user is under a cloud
-    if (r.getTopY() > this->getBottomY()) {
-        return false;
-    }
-
-    return true;
-}
 
 void Rect::draw() const {
     // Don't forget to set the color to the fill field
@@ -178,4 +159,12 @@ void Rect::draw() const {
     glVertex2i(center.x - (size.width/2), center.y - (size.height/2));
     // End Triangle Strip
     glEnd();
+}
+
+bool Rect::isOverlapping(int x, int y) const {
+    if (x > this->getLeftX() && x < this->getRightX() && y > this->getTopY() && y < this->getBottomY()) {
+        return true;
+    }
+    return false;
+
 }
