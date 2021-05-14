@@ -95,19 +95,19 @@ double Rect::getHeight() const {
 }
 
 double Rect::getLeftX() const {
-    return center.x - (size.width);
+    return center.x - (size.width/2);
 }
 
 double Rect::getRightX() const {
-    return center.x + (size.width);
+    return center.x + (size.width/2);
 }
 
 double Rect::getTopY() const {
-    return center.y - (size.height);
+    return center.y - (size.height/2);
 }
 
 double Rect::getBottomY() const {
-    return center.y + (size.height);
+    return center.y + (size.height/2);
 }
 
 void Rect::setSize(dimensions size) {

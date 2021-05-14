@@ -22,6 +22,15 @@ ostream& operator << (ostream& outs, const color &c) {
     return outs;
 }
 
+bool operator == (const color &lhs, const color &rhs) {
+    if (lhs.red == rhs.red && lhs.green == rhs.green && lhs.blue == rhs.blue) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 /********************* Point Struct ********************/
 
 point2D::point2D() : x(0), y(0) {}

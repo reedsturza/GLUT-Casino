@@ -31,7 +31,7 @@ public:
     /*
      * deals the cards for 21
      * Requires: nothing
-     * Modifies: dealer_hand, player_hand
+     * Modifies: dealerHand, playerHand
      * Effects: adds two cards to the dealer deck and player_hand
      */
     void dealCards21();
@@ -40,7 +40,7 @@ public:
     /*
      * gives the player a card
      * Requires: nothing
-     * Modifies: player_hand
+     * Modifies: playerHand
      * Effects: adds one card to the players deck
      */
     void dealPlayer();
@@ -48,7 +48,7 @@ public:
     /*
      * gives the dealer a card
      * Requires: nothing
-     * Modifies: dealer_hand
+     * Modifies: dealerHand
      * Effects: adds one card to the dealers deck
      */
     void dealDealer();

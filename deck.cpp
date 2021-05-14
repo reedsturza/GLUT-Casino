@@ -10,13 +10,16 @@
 #include "time.h"
 using namespace std;
 
+const color white(1, 1, 1);
+const dimensions cardSize(75, 100);
+
 //default constructor runs the methods to generate a random deck
 Deck::Deck() {
     srand(time(NULL));
     //creates the combination for all cards in a deck with face and suit values and then adds them as a card object to the full_deck vector
     for (int y = 0; y < suit.size(); y++) {
         for (unsigned int x = 0; x < face.size(); x++) {
-            Card c(face[x], suit[y]);
+            Card c(face[x], suit[y], white, cardSize);
             fullDeck.push_back(c);
         }
 
