@@ -8,18 +8,23 @@ using namespace std;
 /********************* faceValue Struct ********************/
 faceValue::faceValue() {}
 
-faceValue::faceValue(string number, string suit) : number(number), suit(suit) {}
+faceValue::faceValue(string face, string suit) : face(face), suit(suit) {}
 
 
 
-Card::Card(string number, string suit) {
-    this->cardDetails = {number, suit};
+
+Card::Card(string face, string suit) {
+    this->cardDetails = {face, suit};
 }
 
-string Card::getNumber() const{
-    return cardDetails.number;
+string Card::getFace() const{
+    return cardDetails.face;
 }
 
 string Card::getSuit() const {
     return cardDetails.suit;
+}
+
+string Card::toString() {
+    return cardDetails.face + " " + cardDetails.suit;
 }

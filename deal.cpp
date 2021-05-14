@@ -39,31 +39,31 @@ void Deal::getPlayersScore(int &score11, int &score1) {
     score11 = 0;
     score1 = 0;
     for (int i = 0; i < playerHand.size(); i++) {
-        string card_face = playerHand[i];
+        string cardFace = playerHand[i].getFace();
         //find the index where a space is in the card string
-        string::size_type pos = card_face.find(' ');
+        string::size_type pos = cardFace.find(' ');
         //stores the face into a string so if the card is 10 S, card_face = 10
-        card_face = card_face.substr(0, pos);
-        if (card_face == "A") {
+        cardFace = cardFace.substr(0, pos);
+        if (cardFace == "A") {
             ace = true;
             score11 += 11;
             score1 += 1;
         }
-        else if (card_face == "K") {
+        else if (cardFace == "K") {
             score11 += 10;
             score1 += 10;
         }
-        else if (card_face == "Q") {
+        else if (cardFace == "Q") {
             score11 += 10;
             score1 += 10;
         }
-        else if (card_face == "J") {
+        else if (cardFace == "J") {
             score11 += 10;
             score1 += 10;
         }
         else {
-            score11 += stoi(card_face);
-            score1 += stoi(card_face);
+            score11 += stoi(cardFace);
+            score1 += stoi(cardFace);
         }
     }
     //reset the score1 value to 0 just so we have a default score variable
@@ -80,31 +80,31 @@ void Deal::getDealerScore(int &score11, int &score1) {
     score11 = 0;
     score1 = 0;
     for (int i = 0; i < dealerHand.size(); i++) {
-        string card_face = dealerHand[i];
+        string cardFace = dealerHand[i].getFace();
         //find the index where a space is in the card string
-        string::size_type pos = card_face.find(' ');
+        string::size_type pos = cardFace.find(' ');
         //stores the face into a string so if the card is 10 S, card_face = 10
-        card_face = card_face.substr(0, pos);
-        if (card_face == "A") {
+        cardFace = cardFace.substr(0, pos);
+        if (cardFace == "A") {
             ace = true;
             score11 += 11;
             score1 += 1;
         }
-        else if (card_face == "K") {
+        else if (cardFace == "K") {
             score11 += 10;
             score1 += 10;
         }
-        else if (card_face == "Q") {
+        else if (cardFace == "Q") {
             score11 += 10;
             score1 += 10;
         }
-        else if (card_face == "J") {
+        else if (cardFace == "J") {
             score11 += 10;
             score1 += 10;
         }
         else {
-            score11 += stoi(card_face);
-            score1 += stoi(card_face);
+            score11 += stoi(cardFace);
+            score1 += stoi(cardFace);
         }
     }
     //reset the score1 value to 0 just so we have a default score variable
@@ -114,27 +114,27 @@ void Deal::getDealerScore(int &score11, int &score1) {
 }
 
 //returns the dealer's hand
-vector<string> Deal::getDealerHand() {
+vector<Card> Deal::getDealerHand() {
     return dealerHand;
 }
 
 //returns the players hand
-vector<string> Deal::getPlayerHand() {
+vector<Card> Deal::getPlayerHand() {
     return playerHand;
 }
 
 //converts dealers deck to a string and print
 void Deal::printDealerHand() {
-    string string_dealer;
+    string stringDealer;
     for (int i = 0; i < dealerHand.size(); i++) {
         if (i == (dealerHand.size()-1)) {
-            string_dealer += dealerHand[i];
+            stringDealer += dealerHand[i].toString();
         }
         else {
-            string_dealer += dealerHand[i] + ", ";
+            stringDealer += dealerHand[i].toString() + ", ";
         }
     }
-    cout << "Dealer's Hand: " << string_dealer << endl;
+    cout << "Dealer's Hand: " << stringDealer << endl;
 }
 
 //converts players deck to a string and prints
@@ -142,10 +142,10 @@ void Deal::printPlayerHand() {
     string string_player;
     for (int i = 0; i < playerHand.size(); i++) {
         if (i == (playerHand.size()-1)) {
-            string_player += playerHand[i];
+            string_player += playerHand[i].toString();
         }
         else {
-            string_player += playerHand[i] + ", ";
+            string_player += playerHand[i].toString() + ", ";
         }
     }
     cout << "Player's Hand: " << string_player << endl;

@@ -9,6 +9,7 @@
 #define FINAL_PROJECT_RSTURZA_DEAL_H
 
 #include "deck.h"
+#include "card.h"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -16,8 +17,8 @@
 class Deal {
 private:
     Deck cards;
-    vector<string> playerHand;
-    vector<string> dealerHand;
+    vector<Card> playerHand;
+    vector<Card> dealerHand;
 public:
     /*
      * Default constructor
@@ -75,7 +76,7 @@ public:
     * Modifies: nothing
     * Effects: returns a vector for dealer deck
     */
-    vector<string> getDealerHand();
+    vector<Card> getDealerHand();
 
     /*
     * getter
@@ -83,10 +84,10 @@ public:
     * Modifies: nothing
     * Effects: returns a vector for your deck
     */
-    vector<string> getPlayerHand();
+    vector<Card> getPlayerHand();
 
     /*
-    * prints the dealrs cards
+    * prints the dealers cards
     * Requires: nothing
     * Modifies: nothing
     * Effects: prints the dealer's hand

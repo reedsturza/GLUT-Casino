@@ -9,12 +9,13 @@
 using namespace std;
 
 struct faceValue {
-    string number;
+    string face;
     string suit;
 
     /* Constructors */
     faceValue();
-    faceValue(string number, string suit);
+    faceValue(string face, string suit);
+
 
 };
 
@@ -23,14 +24,16 @@ private:
     faceValue cardDetails;
 public:
     /* Constructors */
-    Card(string number, string suit);
+    Card(string face, string suit);
 
     /* Getters */
-    string getNumber() const; //returns the number as a string
+    string getFace() const; //returns the number as a string
     string getSuit() const; //returns the suit of the card
 
     /* There's no setters because you can't change the values of the cards in the deck or that's cheating */
 
+    /* Takes the two faceValue parameters and converts them to one string */
+    string toString();
 };
 
 #endif //FINAL_PROJECT_RSTURZA_CARD_H
