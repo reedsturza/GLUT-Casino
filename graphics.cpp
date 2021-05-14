@@ -3,6 +3,7 @@
 //
 
 #include "graphics.h"
+#include "shape.h"
 #include "casino.h"
 #include <iostream>
 #include <vector>
