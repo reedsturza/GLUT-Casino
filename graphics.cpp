@@ -8,10 +8,12 @@
 #include "Card.h"
 #include "deal.h"
 #include "casino.h"
+#include "time.h"
 #include <iostream>
 #include <vector>
 using namespace std;
 
+////BlackJack functions
 string checkFinalScores(int player11Score, int player1Score, int dealer11Score, int dealer1Score, int &gameResult);
 string checkPlayer21(Deal &game,
               int &player11Score, int &player1Score,
@@ -23,13 +25,21 @@ string checkDealer21(Deal &game,
                      bool &aceDealer,
                      bool &dealerDraw, int &gameResult, bool &noFinalCheck);
 
+////Slots Functions
+string checkSlots(vector<Rect> slots, int &money);
+
 const color white(1, 1, 1);
 const color red(1, 0, 0);
 const color black(0, 0, 0);
+const color blue(0, 0, 1);
+const color green(0,1, 0);
 const color orange(1, 163/255.0, 22/255.0);
+const color gold(1,215/255.0,0);
 
 GLdouble width, height;
 int wd;
+
+////Variable for blackJack
 //boolean to decide if the user wants to play black Jack or the slot machine (true is black Jack | false is slot machines)
 bool gameChosen;
 //double for the amount of money a user wants to start out with
@@ -56,7 +66,6 @@ string finalCheckPoint;
 bool noFinalCheck = false;
 //determines if there is a dealer check
 bool noDealerCheck = false;
-
 ////Variables for the check_21 function
 //default score if there is no aces, will keep track of when there is aces and the player wants ace to be 11
 int player11Score = 0;
@@ -72,6 +81,32 @@ bool aceDealer = false;
 bool playerStillDrawing = true;
 bool dealerDraw = true;
 
+////Variables for the slot machine
+//vector of rects to look like a slot machine
+vector<Rect> slots;
+//the default dimensions for a slot machine
+const dimensions slotsSize = {150,150};
+//intializes a rect for slotMachineButton
+Rect slotMachineButton;
+//vector of colors for the slot machine to randomize through
+vector<color> colors = {red, blue, green, gold, green, blue, red};
+//string to print out your winning message for slots
+string loseWinStr;
+//boolean to detect when the slots are spun
+bool SlotsSpun = false;
+
+
+void initSlotMachineButton() {
+    slotMachineButton.setSize(120, 50);
+    slotMachineButton.setCenter(250, 270);
+    slotMachineButton.setColor(orange);
+}
+
+void initSlots() {
+    slots.push_back(Rect(red, 90,160, slotsSize));
+    slots.push_back(Rect(green, 250,160, slotsSize));
+    slots.push_back(Rect(blue, 410,160, slotsSize));
+}
 
 void initHoldButton() {
     holdButton.setSize(50,25);
@@ -124,6 +159,11 @@ void display() {
     /*
      * Draw here
      */
+
+    if (money <= 0) {
+        glutDestroyWindow(wd);
+        exit(0);
+    }
 
     //the user wants to play blackjack
     if (gameChosen) {
@@ -190,7 +230,8 @@ void display() {
 
         //the dealer draws cards
         if (dealerDraw && !playerStillDrawing && !gameOver && !noDealerCheck) {
-            finalCheckPoint = checkDealer21(game, dealer11Score, dealer1Score, gameOver, aceDealer, dealerDraw, gameResult, noFinalCheck);
+            finalCheckPoint = checkDealer21(game, dealer11Score, dealer1Score, gameOver, aceDealer, dealerDraw,
+                                            gameResult, noFinalCheck);
         }
 
         //if the player and the dealer are done drawing plus the game isn't over yet
@@ -255,6 +296,33 @@ void display() {
     }
     //the user wants to play slots
     else {
+        //puts the words slot machine above the slots
+        glColor3f(0,0,0);
+        glRasterPos2i(200,50);
+        for (const char &letter : "Slot Machine") {
+            glutBitmapCharacter(GLUT_BITMAP_8_BY_13, letter);
+        }
+
+        for (Rect &r : slots) {
+            r.draw();
+        }
+
+        slotMachineButton.draw();
+        glColor3f(0,0,0);
+        glRasterPos2i(200,270);
+        for (const char &letter : "Press to Spin") {
+            glutBitmapCharacter(GLUT_BITMAP_8_BY_13, letter);
+        }
+        if (SlotsSpun) {
+            loseWinStr = checkSlots(slots, money);
+            SlotsSpun = false;
+        }
+
+        glColor3f(1,1,1);
+        glRasterPos2i(200,320);
+        for (const char &letter : loseWinStr) {
+            glutBitmapCharacter(GLUT_BITMAP_8_BY_13, letter);
+        }
 
     }
 
@@ -329,7 +397,15 @@ void mouse(int button, int state, int x, int y) {
 
     }
     else {
-
+        srand(time(NULL));
+        if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && slotMachineButton.isOverlapping(x,y)) {
+            int num;
+            for (Rect &r : slots) {
+                num = rand() % slots.size();
+                r.setColor(colors[num]);
+            }
+            SlotsSpun = true;
+        }
     }
     glutPostRedisplay();
 }
@@ -347,6 +423,10 @@ int main(int argc, char** argv) {
     casino casinoRoyal;
     gameChosen = casinoRoyal.getGameChosen();
     money = casinoRoyal.getMoney();
+
+    initSlotMachineButton();
+
+    initSlots();
 
     initHoldButton();
 
@@ -477,7 +557,7 @@ string checkPlayer21(Deal &game,
 string checkDealer21(Deal &game,
                      int &dealer11Score, int &dealer1Score, bool &gameOver,
                      bool &aceDealer,
-                     bool &dealerDraw, int &gameResult) {
+                     bool &dealerDraw, int &gameResult, bool &noFinalCheck) {
 
     /*
      * Dealer specific if, only runs when player is holds
@@ -533,4 +613,37 @@ string checkDealer21(Deal &game,
     }
 
     return "";
+}
+
+
+string checkSlots(vector<Rect> slots, int &money) {
+    //tallies the total amount of gold slots
+    int totalGold = 0;
+    for (Rect &r : slots) {
+        if (r.getColor() == gold) {
+            totalGold++;
+        }
+    }
+
+    //if the slots all have the same color but none are gold
+    if (slots[0].getColor() == slots[1].getColor() && slots[0].getColor() == slots[2].getColor() && totalGold == 0) {
+        money = money + 20;
+        return "You won! +$20";
+    }
+    else if (totalGold == 1) {
+        money += 50;
+        return "You won! +$50";
+    }
+    else if (totalGold == 2) {
+        money += 150;
+        return "WOW! +$150";
+    }
+    else if (totalGold == 3) {
+        money += 500;
+        return "Your Cheating! +$500";
+    }
+    else {
+        money = money - 10;
+        return "You Lost -$10";
+    }
 }
