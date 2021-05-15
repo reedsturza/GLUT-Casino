@@ -12,6 +12,13 @@
 #include <vector>
 using namespace std;
 
+string checkFinalScores(int player11Score, int player1Score, int dealer11Score, int dealer1Score, int &gameResult);
+string check_21(Deal &game,
+              int &player11Score,int &dealer11Score, int &player1Score, int &dealer1Score,
+              bool &gameOver,
+              bool &acePlayer, bool &aceDealer,
+              bool &playerStillDrawing, bool &dealerDraw, int &gameResult);
+
 const color white(1, 1, 1);
 const color red(1, 0, 0);
 const color black(0, 0, 0);
@@ -32,6 +39,25 @@ Rect centerDeck;
 Deal game;
 //boolean to decide if the users clicks the middle deck to start the game of 21 or draw a card
 bool clickToStart21 = true;
+//game result determines how much money you win or lose (1 = win, 2 = lose, 3 = tie)
+int gameResult = 0;
+//string that is printed when 21 is checked
+string checkPoint;
+
+////Variables for the check_21 function
+//default score if there is no aces, will keep track of when there is aces and the player wants ace to be 11
+int player11Score = 0;
+int dealer11Score = 0;
+//will keep track of when there is aces and the player wants ace to be 1
+int player1Score = 0;
+int dealer1Score = 0;
+//decides when the game ends
+bool gameOver = false;
+//bool so the code knows if someone has an ace
+bool acePlayer = false;
+bool aceDealer = false;
+bool playerStillDrawing = true;
+bool dealerDraw = false;
 
 
 void initCenterDeck() {
@@ -121,6 +147,16 @@ void display() {
             }
         }
 
+        if (!clickToStart21) {
+            checkPoint = check_21(game, player11Score, dealer11Score, player1Score, dealer1Score, gameOver, acePlayer,
+                                  aceDealer,
+                                  playerStillDrawing, dealerDraw, gameResult);
+            glColor3f(1, 1, 1);
+            glRasterPos2i(10, 490);
+            for (const char &letter : checkPoint) {
+                glutBitmapCharacter(GLUT_BITMAP_8_BY_13, letter);
+            }
+        }
 
     }
     //the user wants to play slots
@@ -252,4 +288,137 @@ int main(int argc, char** argv) {
     // Enter the event-processing loop
     glutMainLoop();
     return 0;
+}
+
+/* checks the final scores for 21 */
+string checkFinalScores(int player11Score, int player1Score, int dealer11Score, int dealer1Score, int &gameResult) {
+    //finds the highest of the players hands in case they have an ace
+    int player_higher;
+    if (player11Score > player1Score && player11Score <= 21) {
+        player_higher = player11Score;
+    }
+    else {
+        player_higher = player1Score;
+    }
+
+    //finds the highest of the dealers hands in case they have an ace
+    int dealer_higher;
+    if (dealer11Score > dealer1Score && dealer11Score <= 21) {
+        dealer_higher = dealer11Score;
+    }
+    else {
+        dealer_higher = dealer1Score;
+    }
+
+    //these if statements decides the winner
+    if (player_higher > dealer_higher) {
+        return "You win! You beat the dealer +$50";
+    }
+    if (player_higher < dealer_higher) {
+        return "You Lose... the dealer scored higher -$50";
+    }
+    if (player_higher == dealer_higher) {
+        return "You Tied the dealer +$0";
+    }
+    return "";
+}
+
+/* runs the game of 21 */
+string check_21(Deal &game,
+              int &player11Score,int &dealer11Score, int &player1Score, int &dealer1Score,
+              bool &gameOver,
+              bool &acePlayer, bool &aceDealer,
+              bool &playerStillDrawing, bool &dealerDraw, int &gameResult) {
+    /*
+     * Player specific if, because in black jack the player draws till completion
+     */
+
+    if (playerStillDrawing) {
+        game.getDealerScore(dealer11Score, dealer1Score);
+        game.getPlayersScore(player11Score, player1Score);
+
+        if (player11Score == 21) {
+            playerStillDrawing = false;
+        }
+
+        //when the player doesn't have and ace and exceeds 21
+        if ((player11Score > 21) && (player1Score == 0)) {
+            playerStillDrawing = false;
+            dealerDraw = true;
+            gameResult = 2;
+            gameOver = true;
+            return "You Lose... you exceeded 21 -$50";
+        }
+        //when the player has an ace but exceeds 21 with A = 11 it set the ace_player to true so A = 1 is played
+        if ((player11Score > 21) && (player1Score != 0)) {
+            acePlayer = true;
+        }
+            //when the player exceeds 21 with A = 11 and A = 1
+            if (player1Score > 21) {
+                playerStillDrawing = false;
+                dealerDraw = true;
+                gameResult = 2;
+                gameOver = true;
+                return "You Lose... you exceeded 21 -$50";
+            }
+        return "You Can either Hold or Draw";
+    }
+
+    /*
+     * Dealer specific if, only runs when player is holds
+     */
+
+    if (dealerDraw) {
+        cout << endl;
+        game.getDealerScore(dealer11Score, dealer1Score);
+        game.getPlayersScore(player11Score, player1Score);
+
+        if (dealer11Score == 21) {
+            dealerDraw = false;
+            gameOver = true;
+        }
+        //in black jack is a dealer is 16 and below they must hit
+        if (dealer11Score <= 16) {
+            game.dealDealer();
+        }
+        //is a dealer is 17 and above they have to stay
+        if (dealer11Score >= 17) {
+            dealerDraw = false;
+        }
+        //when the dealer doesn't have and ace and they exceed 21
+        if ((dealer11Score > 21) && (dealer1Score == 0)) {
+            dealerDraw = false;
+            gameResult = 1;
+            gameOver = true;
+            return "You Win! Dealer exceeded 21 +$50";
+        }
+        //when the dealer exceeds 21 but has an ace so they play A = 1
+        if ((dealer11Score > 21) && (dealer1Score != 0)) {
+            aceDealer = true;
+        }
+        //When the dealer has A = 1 and has to draw more cards
+        if (aceDealer) {
+            if (dealer1Score == 21) {
+                dealerDraw = false;
+            }
+            if (dealer1Score <= 16) {
+                game.dealDealer();
+            }
+            if (dealer1Score >= 17) {
+                dealerDraw = false;
+            }
+            //When the dealer exceeds 21 with A = 11 and A = 1
+            if (dealer1Score > 21) {
+                gameResult = 1;
+                gameOver = true;
+                return "You win... the dealer exceeded 21 +$50";
+            }
+        }
+    }
+
+    //if the player and the dealer are done drawing plus the game isn't over yet
+    if (!dealerDraw && !playerStillDrawing && !gameOver) {
+        return checkFinalScores(player11Score, player1Score, dealer11Score, dealer1Score, gameResult);
+    }
+    return "";
 }
