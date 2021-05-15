@@ -87,20 +87,12 @@ public:
     vector<Card> getPlayerHand();
 
     /*
-    * prints the dealers cards
+    * resets the game for re-use ability
     * Requires: nothing
     * Modifies: nothing
-    * Effects: prints the dealer's hand
-    */
-    void printDealerHand();
-
-    /*
-    * prints the players cards
-    * Requires: nothing
-    * Modifies: nothing
-    * Effects: prints the player's hand
-    */
-    void printPlayerHand();
+    * Effects: clears all vectors
+     */
+    void reset();
 
 };
 

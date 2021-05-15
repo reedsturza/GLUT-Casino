@@ -13,15 +13,20 @@
 using namespace std;
 
 string checkFinalScores(int player11Score, int player1Score, int dealer11Score, int dealer1Score, int &gameResult);
-string check_21(Deal &game,
-              int &player11Score,int &dealer11Score, int &player1Score, int &dealer1Score,
+string checkPlayer21(Deal &game,
+              int &player11Score, int &player1Score,
               bool &gameOver,
-              bool &acePlayer, bool &aceDealer,
-              bool &playerStillDrawing, bool &dealerDraw, int &gameResult);
+              bool &acePlayer,
+              bool &playerStillDrawing, bool &dealerDraw, int &gameResult, bool &noFinalCheck, bool &noDealerCheck);
+string checkDealer21(Deal &game,
+                     int &dealer11Score, int &dealer1Score, bool &gameOver,
+                     bool &aceDealer,
+                     bool &dealerDraw, int &gameResult, bool &noFinalCheck);
 
 const color white(1, 1, 1);
 const color red(1, 0, 0);
 const color black(0, 0, 0);
+const color orange(1, 163/255.0, 22/255.0);
 
 GLdouble width, height;
 int wd;
@@ -33,8 +38,11 @@ int money = 0;
 vector<Card> playersHand;
 //vector for the dealer's hand
 vector<Card> dealersHand;
-//shape for the deck of cards in the middle
+//rect for the deck of cards in the middle
 Rect centerDeck;
+Rect centerDeckOutline;
+//rect for the hold button
+Rect holdButton;
 //creates a deal object for the game of 21
 Deal game;
 //boolean to decide if the users clicks the middle deck to start the game of 21 or draw a card
@@ -42,7 +50,12 @@ bool clickToStart21 = true;
 //game result determines how much money you win or lose (1 = win, 2 = lose, 3 = tie)
 int gameResult = 0;
 //string that is printed when 21 is checked
-string checkPoint;
+string playerCheckPoint;
+string finalCheckPoint;
+//determines if there is a final check
+bool noFinalCheck = false;
+//determines if there is a dealer check
+bool noDealerCheck = false;
 
 ////Variables for the check_21 function
 //default score if there is no aces, will keep track of when there is aces and the player wants ace to be 11
@@ -57,12 +70,21 @@ bool gameOver = false;
 bool acePlayer = false;
 bool aceDealer = false;
 bool playerStillDrawing = true;
-bool dealerDraw = false;
+bool dealerDraw = true;
 
+
+void initHoldButton() {
+    holdButton.setSize(50,25);
+    holdButton.setCenter(300,360);
+    holdButton.setColor(orange);
+}
 
 void initCenterDeck() {
-    centerDeck.setColor(white);
-    centerDeck.setSize(75,100);
+    centerDeckOutline.setColor(white);
+    centerDeck.setColor(0,0,1,1);
+    centerDeckOutline.setSize(75,100);
+    centerDeck.setSize(65,90);
+    centerDeckOutline.setCenter(250,250);
     centerDeck.setCenter(250,250);
 }
 
@@ -107,7 +129,9 @@ void display() {
     if (gameChosen) {
 
         //draw the deck in the middle for the user to click on when they want to play or draw a card
+        centerDeckOutline.draw();
         centerDeck.draw();
+
 
         playersHand = game.getPlayerHand();
 
@@ -147,15 +171,85 @@ void display() {
             }
         }
 
-        if (!clickToStart21) {
-            checkPoint = check_21(game, player11Score, dealer11Score, player1Score, dealer1Score, gameOver, acePlayer,
-                                  aceDealer,
-                                  playerStillDrawing, dealerDraw, gameResult);
-            glColor3f(1, 1, 1);
-            glRasterPos2i(10, 490);
-            for (const char &letter : checkPoint) {
+        if (!clickToStart21 && playerStillDrawing && !gameOver) {
+            holdButton.draw();
+            glColor3f(0, 0, 0);
+            glRasterPos2i(285, 363);
+            for (const char &letter : "Hold") {
                 glutBitmapCharacter(GLUT_BITMAP_8_BY_13, letter);
             }
+            playerCheckPoint = checkPlayer21(game, player11Score, player1Score, gameOver, acePlayer,
+                                  playerStillDrawing, dealerDraw, gameResult, noFinalCheck, noDealerCheck);
+            //tells the player what they can do or if they lost
+            glColor3f(1, 1, 1);
+            glRasterPos2i(10, 350);
+            for (const char &letter : playerCheckPoint) {
+                glutBitmapCharacter(GLUT_BITMAP_8_BY_13, letter);
+            }
+        }
+
+        //the dealer draws cards
+        if (dealerDraw && !playerStillDrawing && !gameOver && !noDealerCheck) {
+            finalCheckPoint = checkDealer21(game, dealer11Score, dealer1Score, gameOver, aceDealer, dealerDraw, gameResult, noFinalCheck);
+        }
+
+        //if the player and the dealer are done drawing plus the game isn't over yet
+        if (!dealerDraw && !playerStillDrawing && !gameOver && !noFinalCheck) {
+            finalCheckPoint = checkFinalScores(player11Score, player1Score, dealer11Score, dealer1Score, gameResult);
+        }
+
+        if (clickToStart21) {
+            glColor3f(1, 1, 1);
+            glRasterPos2i(10, 365);
+            for (const char &letter : finalCheckPoint) {
+                glutBitmapCharacter(GLUT_BITMAP_8_BY_13, letter);
+            }
+        }
+
+        //resets everything for the game to start over
+        if (gameResult == 1) {
+            money += 50;
+            player11Score = 0;
+            dealer11Score = 0;
+            player1Score = 0;
+            dealer1Score = 0;
+            gameOver = false;
+            acePlayer = false;
+            aceDealer = false;
+            playerStillDrawing = true;
+            dealerDraw = true;
+            noFinalCheck = false;
+            gameResult = 0;
+            clickToStart21 = true;
+        }
+        else if (gameResult == 2) {
+            money -= 50;
+            player11Score = 0;
+            dealer11Score = 0;
+            player1Score = 0;
+            dealer1Score = 0;
+            gameOver = false;
+            acePlayer = false;
+            aceDealer = false;
+            playerStillDrawing = true;
+            dealerDraw = true;
+            noFinalCheck = false;
+            gameResult = 0;
+            clickToStart21 = true;
+        }
+        else if (gameResult == 3) {
+            player11Score = 0;
+            dealer11Score = 0;
+            player1Score = 0;
+            dealer1Score = 0;
+            gameOver = false;
+            acePlayer = false;
+            aceDealer = false;
+            playerStillDrawing = true;
+            dealerDraw = true;
+            noFinalCheck = false;
+            gameResult = 0;
+            clickToStart21 = true;
         }
 
     }
@@ -217,8 +311,9 @@ void mouse(int button, int state, int x, int y) {
     //if the user chooses to play 21
     if (gameChosen) {
 
-        if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && centerDeck.isOverlapping(x,y)) {
+        if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && centerDeck.isOverlapping(x,y) && playerStillDrawing) {
             if (clickToStart21) {
+                game.reset();
                 game.dealCards21();
                 clickToStart21 = false;
             }
@@ -226,6 +321,10 @@ void mouse(int button, int state, int x, int y) {
                 //when the user clicks on the deck of cards during the game it will add a card to the user's hand
                 game.dealPlayer();
             }
+        }
+
+        if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && holdButton.isOverlapping(x,y) && playerStillDrawing) {
+            playerStillDrawing = false;
         }
 
     }
@@ -249,6 +348,7 @@ int main(int argc, char** argv) {
     gameChosen = casinoRoyal.getGameChosen();
     money = casinoRoyal.getMoney();
 
+    initHoldButton();
 
     initCenterDeck();
 
@@ -312,23 +412,26 @@ string checkFinalScores(int player11Score, int player1Score, int dealer11Score, 
 
     //these if statements decides the winner
     if (player_higher > dealer_higher) {
+        gameResult = 1;
         return "You win! You beat the dealer +$50";
     }
     if (player_higher < dealer_higher) {
+        gameResult = 2;
         return "You Lose... the dealer scored higher -$50";
     }
     if (player_higher == dealer_higher) {
+        gameResult = 3;
         return "You Tied the dealer +$0";
     }
     return "";
 }
 
 /* runs the game of 21 */
-string check_21(Deal &game,
-              int &player11Score,int &dealer11Score, int &player1Score, int &dealer1Score,
+string checkPlayer21(Deal &game,
+              int &player11Score, int &player1Score,
               bool &gameOver,
-              bool &acePlayer, bool &aceDealer,
-              bool &playerStillDrawing, bool &dealerDraw, int &gameResult) {
+              bool &acePlayer,
+              bool &playerStillDrawing, bool &dealerDraw, int &gameResult, bool &noFinalCheck, bool &noDealerCheck) {
     /*
      * Player specific if, because in black jack the player draws till completion
      */
@@ -344,9 +447,11 @@ string check_21(Deal &game,
         //when the player doesn't have and ace and exceeds 21
         if ((player11Score > 21) && (player1Score == 0)) {
             playerStillDrawing = false;
-            dealerDraw = true;
+            dealerDraw = false;
             gameResult = 2;
             gameOver = true;
+            noFinalCheck = true;
+            noDealerCheck = true;
             return "You Lose... you exceeded 21 -$50";
         }
         //when the player has an ace but exceeds 21 with A = 11 it set the ace_player to true so A = 1 is played
@@ -356,13 +461,23 @@ string check_21(Deal &game,
             //when the player exceeds 21 with A = 11 and A = 1
             if (player1Score > 21) {
                 playerStillDrawing = false;
-                dealerDraw = true;
+                dealerDraw = false;
                 gameResult = 2;
                 gameOver = true;
+                noFinalCheck = true;
+                noDealerCheck = true;
                 return "You Lose... you exceeded 21 -$50";
             }
         return "You Can either Hold or Draw";
     }
+
+    return "";
+}
+
+string checkDealer21(Deal &game,
+                     int &dealer11Score, int &dealer1Score, bool &gameOver,
+                     bool &aceDealer,
+                     bool &dealerDraw, int &gameResult) {
 
     /*
      * Dealer specific if, only runs when player is holds
@@ -375,7 +490,6 @@ string check_21(Deal &game,
 
         if (dealer11Score == 21) {
             dealerDraw = false;
-            gameOver = true;
         }
         //in black jack is a dealer is 16 and below they must hit
         if (dealer11Score <= 16) {
@@ -390,6 +504,7 @@ string check_21(Deal &game,
             dealerDraw = false;
             gameResult = 1;
             gameOver = true;
+            noFinalCheck = true;
             return "You Win! Dealer exceeded 21 +$50";
         }
         //when the dealer exceeds 21 but has an ace so they play A = 1
@@ -411,14 +526,11 @@ string check_21(Deal &game,
             if (dealer1Score > 21) {
                 gameResult = 1;
                 gameOver = true;
+                noFinalCheck = true;
                 return "You win... the dealer exceeded 21 +$50";
             }
         }
     }
 
-    //if the player and the dealer are done drawing plus the game isn't over yet
-    if (!dealerDraw && !playerStillDrawing && !gameOver) {
-        return checkFinalScores(player11Score, player1Score, dealer11Score, dealer1Score, gameResult);
-    }
     return "";
 }

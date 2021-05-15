@@ -123,32 +123,9 @@ vector<Card> Deal::getPlayerHand() {
     return playerHand;
 }
 
-//converts dealers deck to a string and print
-void Deal::printDealerHand() {
-    string stringDealer;
-    for (int i = 0; i < dealerHand.size(); i++) {
-        if (i == (dealerHand.size()-1)) {
-            stringDealer += dealerHand[i].toString();
-        }
-        else {
-            stringDealer += dealerHand[i].toString() + ", ";
-        }
-    }
-    cout << "Dealer's Hand: " << stringDealer << endl;
-}
-
-//converts players deck to a string and prints
-void Deal::printPlayerHand() {
-    string string_player;
-    for (int i = 0; i < playerHand.size(); i++) {
-        if (i == (playerHand.size()-1)) {
-            string_player += playerHand[i].toString();
-        }
-        else {
-            string_player += playerHand[i].toString() + ", ";
-        }
-    }
-    cout << "Player's Hand: " << string_player << endl;
+void Deal::reset() {
+    playerHand.clear();
+    dealerHand.clear();
 }
 
 
