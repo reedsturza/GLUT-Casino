@@ -27,5 +27,5 @@ two separate score tallies for each hand. Finally the main function runs game of
 ##Slot Machine
 The slot machine is made using a vector of Rects with set x,y points and colors. The way the program switches the colors is using the vector of colors
 and rand. When the user presses the slotMachineButton Rand selects a number in range of the vector of colors and then using that number to change each
-slot to a randomly selected color. I've tested the outcome of gold and in 100 spins gold appears about 7-18 times. So the odds of getting a gold are 
-about < 18%. 
+slot to a randomly selected color. I've tested the outcome of gold and in 100 spins gold appears about 7-10 times. So the odds of getting a gold are 
+about < 10%. 

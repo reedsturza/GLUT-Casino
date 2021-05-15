@@ -91,11 +91,13 @@ const dimensions slotsSize = {150,150};
 //intializes a rect for slotMachineButton
 Rect slotMachineButton;
 //vector of colors for the slot machine to randomize through
-vector<color> colors = {red, blue, green, gold, green, blue, red};
+vector<color> colors = {red, blue, green, gold, green, blue, red, red, green, blue, red, green, blue};
 //string to print out your winning message for slots
 string loseWinStr;
 //boolean to detect when the slots are spun
 bool SlotsSpun = false;
+//background rect for slots
+Rect background;
 
 
 void initSlotMachineButton() {
@@ -105,6 +107,9 @@ void initSlotMachineButton() {
 }
 
 void initSlots() {
+    background.setSize(500, 300);
+    background.setCenter(250,160);
+    background.setColor(169/255.0,169/255.0,169/255.0,1);
     slots.push_back(Rect(red, 90,160, slotsSize));
     slots.push_back(Rect(green, 250,160, slotsSize));
     slots.push_back(Rect(blue, 410,160, slotsSize));
@@ -133,12 +138,7 @@ void init() {
 /* Initialize OpenGL Graphics */
 void initGL() {
     // Set "clearing" or background color
-    if (gameChosen) {
-        glClearColor(0.00, 0.3, 0.05, 1.0); // casino table green
-    }
-    else {
-        glClearColor(0.75, 0.75, 0.75, 1.0); //light grey
-    }
+    glClearColor(0.00, 0.3, 0.05, 1.0); // casino table green
 }
 
 /* Handler for window-repaint event. Call back when the window first appears and
@@ -298,8 +298,9 @@ void display() {
     }
     //the user wants to play slots
     else {
+        background.draw();
         //puts the words slot machine above the slots
-        glColor3f(0,0,0);
+        glColor3f(1,1,1);
         glRasterPos2i(200,50);
         for (const char &letter : "Slot Machine") {
             glutBitmapCharacter(GLUT_BITMAP_8_BY_13, letter);
@@ -315,6 +316,7 @@ void display() {
         for (const char &letter : "Press to Spin") {
             glutBitmapCharacter(GLUT_BITMAP_8_BY_13, letter);
         }
+
         if (SlotsSpun) {
             loseWinStr = checkSlots(slots, money);
             SlotsSpun = false;
@@ -413,7 +415,7 @@ void mouse(int button, int state, int x, int y) {
         if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && slotMachineButton.isOverlapping(x,y)) {
             int num;
             for (Rect &r : slots) {
-                num = rand() % slots.size();
+                num = rand() % colors.size();
                 r.setColor(colors[num]);
             }
             SlotsSpun = true;
@@ -644,18 +646,18 @@ string checkSlots(vector<Rect> slots, int &money) {
     }
     else if (totalGold == 1) {
         money += 50;
-        return "You won! +$50";
+        return "You won! +$30";
     }
     else if (totalGold == 2) {
         money += 150;
-        return "WOW! +$150";
+        return "WOW! +$50";
     }
     else if (totalGold == 3) {
         money += 500;
-        return "Your Cheating! +$500";
+        return "Your Cheating! +$100";
     }
     else {
         money = money - 10;
-        return "You Lost -$10";
+        return "You Lost -$20";
     }
 }
