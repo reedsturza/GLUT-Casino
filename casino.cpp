@@ -18,7 +18,7 @@ casino::casino() {
 string casino::askPlayerGame() {
     bool validInput = false;
     string gameChoice;
-    cout << "Do you want to play: " << endl << "1. Black Jack (b)" << endl << "2. Slot Machine (w)" << endl << "Enter b or s:";
+    cout << "Do you want to play: " << endl << "1. Black Jack (b)" << endl << "2. Slot Machine (s)" << endl << "Enter b or s:";
     cin >> gameChoice;
     while (!validInput) {
         if (gameChoice == "b" || gameChoice == "s") {
