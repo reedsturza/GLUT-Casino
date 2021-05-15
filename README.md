@@ -1,4 +1,5 @@
 # Final-Project-rsturza
+
 ####Contributors: Reed Sturza
 
 ##How To Play
@@ -32,3 +33,8 @@ The slot machine is made using a vector of Rects with set x,y points and colors.
 and rand. When the user presses the slotMachineButton Rand selects a number in range of the vector of colors and then using that number to change each
 slot to a randomly selected color. I've tested the outcome of gold and in 100 spins gold appears about 7-10 times. So the odds of getting a gold are 
 about < 10%. 
+
+##Video
+https://web.microsoftstream.com/video/93763e56-9f81-402d-93b7-82f3c99407e7
+
+The program didn't seem to like when I recorded it so I just editied it out, the games aren't too hard to understand anyways.
