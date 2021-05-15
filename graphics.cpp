@@ -39,11 +39,13 @@ const color gold(1,215/255.0,0);
 GLdouble width, height;
 int wd;
 
-////Variable for blackJack
+
 //boolean to decide if the user wants to play black Jack or the slot machine (true is black Jack | false is slot machines)
 bool gameChosen;
 //double for the amount of money a user wants to start out with
 int money = 0;
+
+////Variable for blackJack
 //vector for the user's cards
 vector<Card> playersHand;
 //vector for the dealer's hand
@@ -344,6 +346,16 @@ void kbd(unsigned char key, int x, int y)
     if (key == 27) {
         glutDestroyWindow(wd);
         exit(0);
+    }
+
+    //change the game slots to blackJack while the game isn't being played
+    if (key == 98 && !gameChosen && !SlotsSpun) {
+        gameChosen = true;
+    }
+
+    //change the game from blackJack to slots if the game of black jack isn't currently in progress
+    if (key == 115 && gameChosen && clickToStart21) {
+        gameChosen = false;
     }
 
     glutPostRedisplay();
